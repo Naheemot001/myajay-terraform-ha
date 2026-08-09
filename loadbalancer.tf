@@ -34,3 +34,21 @@ resource "aws_lb_listener" "myajay_lb_listener_http" {
   }
 
 }
+
+resource "aws_lb_listener" "myajay_lb_listener_https" {
+  load_balancer_arn = aws_lb.myajay_lb.arn
+  port              = 443
+  protocol          = "HTTPS"
+
+  ssl_policy      = "ELBSecurityPolicy-2016-08"
+  certificate_arn = aws_acm_certificate.myajay_app_acm_cert.arn
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.myajay_tg.arn
+  }
+
+  depends_on = [
+    aws_acm_certificate_validation.myajay_app_cert_validation
+  ]
+}
